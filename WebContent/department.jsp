@@ -28,18 +28,28 @@ th {
     <tr>
       <th>ID</th>
       <th>部署名</th>
+      <th colspan="2"></th>
     </tr>
     <% for(DepartmentBean depBean : depList) {%>
     <tr>
       <td><%=depBean.getDepartmentId() %></td>
       <td><%=depBean.getDepartment() %></td>
-      <td></td>
-      <td></td>
+      <td>
+    <form method="post" action="departmentAddEdit.jsp">
+      <input type="hidden" name="departmentId" value="<%=depBean.getDepartmentId() %>" />
+      <input type="hidden" name="department" value="<%=depBean.getDepartment() %>" />
+      <input type="hidden" name="action" value="depEdit" />
+      <input type="submit" value="編集" />
+    </form>
+      </td>
+      <td>
+
+      </td>
     </tr>
     <% } %>
   </table>
   <p>
-  <a href="#"><button type="button">新規作成</button></a>
+  <a href="departmentAddEdit.jsp?action=depAdd"><button type="button">新規作成</button></a>
   </p>
 
 </body>
