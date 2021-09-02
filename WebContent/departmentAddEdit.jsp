@@ -13,9 +13,10 @@ String value = request.getParameter("department") != null ? request.getParameter
 <title>部署データを<%=label %>します</title>
 </head>
 <body>
-<h1>部署データを<%=label %>します</h1>
+<h2>部署データを<%=label %>します</h2>
 <form method="post" action="DepartmentServlet">
   部署名:<input type="text" name="department" value="<%=value %>"/>
+  <input type="hidden" name="action" value="<%=request.getParameter("action") %>" />
   <input type="submit" value="送信" />
 </form>
 </body>
