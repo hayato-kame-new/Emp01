@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
 
 <%
+// フォワード先の結果を表示するjspファイルなので、WEB-INF配下にjspフォルダを作って そこに入れる　HTTPメソッドでアクセスできないようにする
 // リクエストスコープから、リクエストスコープ変数を取得
 String msg = (String)request.getAttribute("msg");
 String title = (String)request.getAttribute("title");
@@ -10,7 +11,7 @@ String action = (String)request.getAttribute("action");
 // 次の遷移先のパス
 String nextPath = "";
 String next = "";
-if (action.equals("depAdd")) {
+if (action.equals("depAdd") || action.equals("depEdit")) {
   nextPath = "department.jsp";
   next = "部署一覧ページ";
 }

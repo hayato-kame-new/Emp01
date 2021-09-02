@@ -17,6 +17,7 @@ String value = request.getParameter("department") != null ? request.getParameter
 <form method="post" action="DepartmentServlet">
   部署名:<input type="text" name="department" value="<%=value %>"/>
   <input type="hidden" name="action" value="<%=request.getParameter("action") %>" />
+  <input type="hidden" name="departmentId" value="<%=request.getParameter("departmentId") %>" />
   <input type="submit" value="送信" />
 </form>
 </body>

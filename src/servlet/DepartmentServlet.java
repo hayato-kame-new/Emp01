@@ -44,6 +44,7 @@ public class DepartmentServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         String department = request.getParameter("department");
         String action = request.getParameter("action");
+        // 新規の時は、hiddenフィールドから departmentIdは、null
 
         // デフォルトのフォワード先、結果ページへのパス
         String path = "/WEB-INF/jsp/result.jsp";
@@ -51,18 +52,34 @@ public class DepartmentServlet extends HttpServlet {
         String msg = "データベースへの登録に成功しました。";
         String title = "成功";
 
-        DepartmentBean depBean = new DepartmentBean();
-        DepartmentDAO deDAO = new DepartmentDAO();
-        // departmentIdカラム 主キーが、文字列なので、departmentIdを生成するメソッドを呼び出す
-        String generatedId = deDAO.generateId(); // 生成した文字列の主キー departmentId を取得
-
-        depBean.setDepartmentId(generatedId); // 主キーをセット
-        depBean.setDepartment(department); // フォームから送られた部署名をセット
-        // 新規登録します。新規登録のメソッドを呼び出します 成功したら、true 失敗したら falseを返します。
-        boolean result = deDAO.depAdd(depBean);
-        if (!result) { // trueじゃなかったら、失敗だから、エラーメッセージを元の画面に返します
-            msg = "データベースへの更新に失敗しました";
-            title = "失敗";
+        DepartmentDAO depDAO = new DepartmentDAO();
+        //        行いたい操作によって、分岐
+        boolean result = true; // データ新規や更新が成功したかどうか
+        switch(action) {
+        case "depAdd":
+            DepartmentBean depBean = new DepartmentBean();
+            // departmentIdカラム 主キーが、文字列なので、departmentIdを生成するメソッドを呼び出す
+            String generatedId = depDAO.generateId(); // 生成した文字列の主キー departmentId を取得
+            depBean.setDepartmentId(generatedId); // 主キーをセット
+            depBean.setDepartment(department); // フォームから送られた部署名をセット
+            // 新規登録します。新規登録のメソッドを呼び出します 成功したら、true 失敗したら falseを返します。
+            result = depDAO.depAdd(depBean);
+            if (!result) { // trueじゃなかったら、失敗だから、エラーメッセージを結果ページに出す
+                msg = "データの新規登録に失敗しました";
+                title = "失敗";
+            }
+            // ここに来たら、成功してる
+            break;
+        case "depEdit":
+            // 編集時は departmentId が hiddenフィールド で送られて来てる 実引数に渡して、データ更新をする
+            String editDepName = request.getParameter("department"); // 変更したい名前
+            // 送られて来た部署名に変更するメソッドを呼び出す
+            result = depDAO.depUpdate(editDepName, request.getParameter("departmentId"));
+            if(!result) { // trueじゃなかったら、失敗だから、エラーメッセージを結果ページに出す
+                msg = "データの更新に失敗しました";
+                title = "失敗";
+            }
+            break;
         }
 
          // リクエストスコープに保存する リクエストスコープは、フォワードはできる（リダイレクトはできない）

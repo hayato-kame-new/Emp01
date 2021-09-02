@@ -12,9 +12,14 @@ import model.DepartmentBean;
 
 public class DepartmentDAO {
 
+    final String DRIVER_NAME = "org.postgresql.Driver";
+    final String JDBC_URL = "jdbc:postgresql://localhost:5432/emp01";
+    final String DB_USER = "postgres";
+    final String DB_PASS = "postgres";
+
     /**
      * 部署のリストを取得する 失敗した時、null返す
-     * @return departmentLists
+     * @return depLists
      */
     public List<DepartmentBean> findAll() {
 
@@ -25,9 +30,10 @@ public class DepartmentDAO {
         PreparedStatement pstmt = null;
 
         try {
-            Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/emp01", "postgres", "postgres");
-            String sql = "select departmentId, department from department";
+            Class.forName(DRIVER_NAME);
+            conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);
+            // PostgreSQL だと、order by departmentId を付けないと、順番が、更新されたのが一番最後の順になってします。
+            String sql = "select departmentId, department from department order by departmentId";
             pstmt = conn.prepareStatement(sql);
             rs = pstmt.executeQuery();
             while (rs.next()) {
@@ -70,6 +76,7 @@ public class DepartmentDAO {
                 }
             }
         }
+        // 成功したら、リストを返す。一つも登録されてないときは、空のリストを返す
         return depList;
     }
 
@@ -85,8 +92,8 @@ public class DepartmentDAO {
         ResultSet rs = null;
 
         try {
-            Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/emp01", "postgres", "postgres");
+            Class.forName(DRIVER_NAME);
+            conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);
             String sql = "select departmentId from department order by departmentId desc limit 1";
             pstmt = conn.prepareStatement(sql);
             rs = pstmt.executeQuery();
@@ -143,8 +150,8 @@ public class DepartmentDAO {
         PreparedStatement pstmt = null;
 
         try {
-              Class.forName("org.postgresql.Driver");
-              conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/emp01", "postgres", "postgres");
+            Class.forName(DRIVER_NAME);
+            conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);
               String sql = "insert into department (departmentId, department) values (?, ?)";
               pstmt = conn.prepareStatement(sql);
               pstmt.setString(1, depBean.getDepartmentId());
@@ -179,6 +186,53 @@ public class DepartmentDAO {
             }
         }
         return true; // ここまで来たら、成功なので trueを返す
+    }
+    /**
+     * 部署名を更新する
+     * @param editDepName
+     * @param departmentId
+     * @return true 成功<br />false 失敗
+     */
+    public boolean depUpdate(String editDepName, String departmentId) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try {
+            Class.forName(DRIVER_NAME);
+            conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);
+            String sql = "update department set department = ? where departmentId = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, editDepName); // 引数で渡ってきた部署名をセットする
+            pstmt.setString(2, departmentId); // 引数で渡って来た部署IDをセットする
+         // 成功したら、executeUpdateメソッドの戻り値は、更新された行数を表します。
+            int result = pstmt.executeUpdate();
+            if (result != 1) { // １データしか更新しないから
+                return false; // 失敗したら、falseを返す
+            }
+            // 1 が帰ったら成功なので、すすむ
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            // PrepareStatementインスタンスのクローズ処理
+            if (pstmt != null) {
+                try {
+                    pstmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            }
+         // データーベース切断
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
 
