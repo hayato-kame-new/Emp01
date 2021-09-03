@@ -49,7 +49,7 @@ public class DepartmentServlet extends HttpServlet {
         // デフォルトのフォワード先、結果ページへのパス
         String path = "/WEB-INF/jsp/result.jsp";
         // 結果ページへメッセージを出す
-        String msg = "データベースへの登録に成功しました。";
+        String msg = "データの新規登録に成功しました。";
         String title = "成功";
 
         DepartmentDAO depDAO = new DepartmentDAO();
@@ -79,6 +79,17 @@ public class DepartmentServlet extends HttpServlet {
                 msg = "データの更新に失敗しました";
                 title = "失敗";
             }
+            msg = "データを更新しました";
+            break;
+        case "depDelete":
+            // departmentId が hiddenフィールド で送られて来てる
+            result = depDAO.depDelete(request.getParameter("departmentId"));
+            if(!result) { // trueじゃなかったら、失敗 削除に失敗した時は、部署一覧に戻る
+                msg = "データの削除に失敗しました";
+            }
+            // 成功しても、失敗しても、部署一覧に戻るので
+            path = "department.jsp";
+            msg = "データを削除しました。";
             break;
         }
 

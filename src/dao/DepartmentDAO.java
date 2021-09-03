@@ -22,7 +22,7 @@ public class DepartmentDAO {
      * @return depLists
      */
     public List<DepartmentBean> findAll() {
-
+        // 中身は、ArrayListで作ること、ループで取り出したいから
         List<DepartmentBean> depList = new ArrayList<DepartmentBean>();
 
         Connection conn = null;
@@ -33,7 +33,7 @@ public class DepartmentDAO {
             Class.forName(DRIVER_NAME);
             conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);
             // PostgreSQL だと、order by departmentId を付けないと、順番が、更新されたのが一番最後の順になってします。
-            String sql = "select departmentId, department from department order by departmentId";
+            String sql = "select departmentId, department from departments order by departmentId";
             pstmt = conn.prepareStatement(sql);
             rs = pstmt.executeQuery();
             while (rs.next()) {
@@ -94,7 +94,7 @@ public class DepartmentDAO {
         try {
             Class.forName(DRIVER_NAME);
             conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);
-            String sql = "select departmentId from department order by departmentId desc limit 1";
+            String sql = "select departmentId from departments order by departmentId desc limit 1";
             pstmt = conn.prepareStatement(sql);
             rs = pstmt.executeQuery();
             // limit 1 ですから、1つしか返さないから、while じゃなくて ifを使ってる
@@ -152,7 +152,7 @@ public class DepartmentDAO {
         try {
             Class.forName(DRIVER_NAME);
             conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);
-              String sql = "insert into department (departmentId, department) values (?, ?)";
+              String sql = "insert into departments (departmentId, department) values (?, ?)";
               pstmt = conn.prepareStatement(sql);
               pstmt.setString(1, depBean.getDepartmentId());
               pstmt.setString(2, depBean.getDepartment());
@@ -199,7 +199,7 @@ public class DepartmentDAO {
         try {
             Class.forName(DRIVER_NAME);
             conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);
-            String sql = "update department set department = ? where departmentId = ?";
+            String sql = "update departments set department = ? where departmentId = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, editDepName); // 引数で渡ってきた部署名をセットする
             pstmt.setString(2, departmentId); // 引数で渡って来た部署IDをセットする
@@ -209,6 +209,52 @@ public class DepartmentDAO {
                 return false; // 失敗したら、falseを返す
             }
             // 1 が帰ったら成功なので、すすむ
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            // PrepareStatementインスタンスのクローズ処理
+            if (pstmt != null) {
+                try {
+                    pstmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            }
+         // データーベース切断
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 部署データを削除する
+     * @param departmentId
+     * @return true 成功<br />false 失敗
+     */
+    public boolean depDelete(String departmentId) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try {
+            Class.forName(DRIVER_NAME);
+            conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);
+            String sql = "delete from departments where departmentId = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, departmentId); // 引数で渡って来たのをセットする
+            // 成功したら、executeUpdateメソッドの戻り値は、更新された行数を表します。
+            int result = pstmt.executeUpdate();
+            if(result != 1) {
+                return false;
+            }
+            // 1 だったら成功
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
             return false;

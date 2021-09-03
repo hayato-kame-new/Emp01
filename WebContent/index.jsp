@@ -8,6 +8,7 @@
 </head>
 <body>
 <h2>社員管理トップページ</h2>
-<a href="./department.jsp" >部署一覧ページへ</a>
+<a href="./department.jsp" >部署一覧ページへ</a><br />
+<a href="./employee.jsp" >従業員一覧ページへ</a>
 </body>
 </html>

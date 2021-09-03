@@ -8,6 +8,9 @@
 DepartmentDAO depDAO = new DepartmentDAO();
 List<DepartmentBean> depList = new ArrayList<DepartmentBean>();
 depList = depDAO.findAll();
+
+// 削除しようとして失敗した時のエラーメッセージ
+String msg = (String)request.getAttribute("msg");
 %>
 
 <!DOCTYPE html>
@@ -22,6 +25,11 @@ th {
 </style>
 </head>
 <body>
+<%
+if (msg != null) {
+  out.print(msg);
+}
+%>
 
   <p>部署一覧:</p>
   <table border="1">
@@ -45,7 +53,13 @@ th {
             type="submit" value="編集" />
         </form>
       </td>
-      <td></td>
+      <td>
+      <form method="post" action="DepartmentServlet" >
+        <input type="hidden" name="departmentId" value="<%=depBean.getDepartmentId() %>" />
+        <input type="hidden" name="action" value="depDelete" />
+        <input type="submit" value="削除" />
+      </form>
+      </td>
     </tr>
     <%
     }
