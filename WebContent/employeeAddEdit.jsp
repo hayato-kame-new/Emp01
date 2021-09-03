@@ -20,7 +20,16 @@ String label = action.equals("add") ? "新規作成" : "編集";
 <h2>社員データを<%=label %>します</h2>
 
 <!-- フォーム送信先は、チェック用サーブレットです。 まず、photosテーブルについて操作をできるようにする -->
-
+<form action="CheckServlet" enctype="multipart/form-data" method="post">
+  <input type="hidden" name="action" value="<%=action %>">
+  <p>
+  写真:<img src="" alt="写真" title="社員の写真" width="300" height="250" />
+  </p>
+  <input type="file" name="image" accept=".jpeg, .jpg, .png" />
+  <input type="hidden" name="photoId" value="" />
+  <input type="submit" value="送信" />
+  <!-- CheckServletへ行く -->
+</form>
 
 </body>
 </html>
