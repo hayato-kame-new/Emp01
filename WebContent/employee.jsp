@@ -3,6 +3,9 @@
 <%@ page import="dao.EmployeeDAO, java.util.*, model.EmployeeBean" %>
 
 <%
+// リクエスト情報の文字化け防止
+request.setCharacterEncoding("UTF-8");
+
 // 従業員一覧表示用に、従業員リストの取得
 EmployeeDAO empDAO = new EmployeeDAO();
 List<EmployeeBean> empList = new ArrayList<EmployeeBean>(); // new でまずメモリ上の確保をする
@@ -39,6 +42,10 @@ th {
 <% } %>
 </table>
 
+<p>
+<!-- aリンクだと、HTTPメソッドは、GETメソッドなので クエリー文字列で、送る -->
+<a href="EmployeeServlet?action=add"><button type="button">新規追加</button></a>
+</p>
 
 </body>
 </html>
