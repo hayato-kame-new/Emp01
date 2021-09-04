@@ -25,7 +25,8 @@ String label = action.equals("add") ? "新規作成" : "編集";
 <form action="CheckServlet" enctype="multipart/form-data" method="post">
   <input type="hidden" name="action" value="<%=action %>">
   <p>
-  写真:<img src="" alt="写真" title="社員の写真" width="300" height="250" />
+  <!-- 写真の表示は、PhotoDisplayServletがコントローラーです クエリー文字列で、キーphotoId 値が empBean.getPhotoId() で送ってるので、 HTTPメソッドは、GETメソッド -->
+  写真:<img src="PhotoDisplayServlet?photoId=<%=empBean.getPhotoId() %>" alt="写真" title="社員の写真" width="300" height="250" />
   </p>
   <input type="file" name="image" accept=".jpeg, .jpg, .png" />
   <input type="hidden" name="photoId" value="" />

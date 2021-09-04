@@ -114,6 +114,7 @@ public class DepartmentDAO {
                     rs.close();
                 } catch (SQLException e) {
                     e.printStackTrace();
+                    return null;
                 }
             }
             if (pstmt != null) {

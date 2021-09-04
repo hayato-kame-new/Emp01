@@ -10,7 +10,7 @@ public class PhotoBean implements Serializable {
     private static final long serialVersionUID = -6614330110327145057L;
     private int photoId;
     private byte[] photoData;
-    private String mime; // contentTypeです    "image/jpeg"   "image/png"など
+    private String mime; // contentTypeです    "image/jpeg"   "image/png"など  "タイプ/サブタイプ"  MIMEタイプは常にタイプとサブタイプの両方を持ち、一方だけで使われることはありません。
 
     /**
      * JavaBeansは、引数なしのコンストラクタをもつ
