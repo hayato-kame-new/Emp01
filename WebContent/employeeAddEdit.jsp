@@ -19,7 +19,9 @@ String label = action.equals("add") ? "新規作成" : "編集";
 <body>
 <h2>社員データを<%=label %>します</h2>
 
-<!-- フォーム送信先は、チェック用サーブレットです。 まず、photosテーブルについて操作をできるようにする -->
+<!-- フォーム送信先は、チェック用サーブレットです。
+ まず、photosテーブルについて操作をできるようにする
+ CheckServletでは、@MultipartConfigアノテーションを クラス宣言の上に付けてください -->
 <form action="CheckServlet" enctype="multipart/form-data" method="post">
   <input type="hidden" name="action" value="<%=action %>">
   <p>
