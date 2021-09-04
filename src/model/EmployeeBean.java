@@ -14,7 +14,7 @@ public class EmployeeBean implements Serializable {
     private int age;
     private int gender; //性別  1: 男  2: 女
     private int photoId;
-    private int zipNumber;
+    private String zipNumber;
     private String pref;
     private String address; // 都道府県名の下の住所
     private String departmentId;
@@ -67,7 +67,7 @@ public class EmployeeBean implements Serializable {
     public int getPhotoId() {
         return photoId;
     }
-    public int getZipNumber() {
+    public String getZipNumber() {
         return zipNumber;
     }
     public String getPref() {
@@ -100,7 +100,7 @@ public class EmployeeBean implements Serializable {
     public void setPhotoId(int photoId) {
         this.photoId = photoId;
     }
-    public void setZipNumber(int zipNumber) {
+    public void setZipNumber(String zipNumber) {
         this.zipNumber = zipNumber;
     }
     public void setPref(String pref) {

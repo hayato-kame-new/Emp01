@@ -68,7 +68,7 @@ public class EmployeeDAO {
                 empBean.setAge(age);
                 empBean.setGender(gender);
                 empBean.setPhotoId(photoId);
-                empBean.setZipNumber(photoId);
+                empBean.setZipNumber(zipNumber);
                 empBean.setPref(pref);
                 empBean.setAddress(address);
                 empBean.setDepartmentId(departmentId);
