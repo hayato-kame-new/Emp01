@@ -23,10 +23,43 @@ public class EmployeeBean implements Serializable {
 
     /**
      * 引数なしのコンストラクタ JavaBeansのルール
+     * 引数ありのコンストラクタを作ると、デフォルトコンストラクタは作れないので、明示的に作る必要ある
      */
     public EmployeeBean() {
         super();
     }
+
+    /**
+     * 引数ありのコンストラクタ
+     * @param employeeId
+     * @param name
+     * @param age
+     * @param gender
+     * @param photoId
+     * @param zipNumber
+     * @param pref
+     * @param address
+     * @param departmentId
+     * @param hireDate
+     * @param retirementDate
+     */
+    public EmployeeBean(String employeeId, String name, int age, int gender, int photoId, String zipNumber, String pref,
+            String address, String departmentId, Date hireDate, Date retirementDate) {
+        super();
+        this.employeeId = employeeId;
+        this.name = name;
+        this.age = age;
+        this.gender = gender;
+        this.photoId = photoId;
+        this.zipNumber = zipNumber;
+        this.pref = pref;
+        this.address = address;
+        this.departmentId = departmentId;
+        this.hireDate = hireDate;
+        this.retirementDate = retirementDate;
+    }
+
+
     /**
      * 住所を表示する fullAdressプロパティを作る
      * @return 住所

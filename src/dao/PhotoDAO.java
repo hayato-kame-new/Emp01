@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class PhotoDAO {
 
@@ -31,17 +32,21 @@ public class PhotoDAO {
             conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);
             // ?::bytea  PostgreSQL だと、 ?::integer  ?::status ?::bytea とする 文字列だけ ? だけでいい
             String sql = "insert into photos (photoData, mime) values (?::bytea, ?)";
-            pstmt = conn.prepareStatement(sql);
+            // Postgres　では、第二引数に Statement.RETURN_GENERATED_KEYS を入れてください
+            pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             pstmt.setBinaryStream(1, new ByteArrayInputStream(photoData));
             pstmt.setString(2, mime);
 
             int result = pstmt.executeUpdate(); // 更新処理 戻り値は、変更したレコードの数
+
             if (result != 1) { // 失敗
                 return photoId; // 初期値の 0を返す、呼び出し元では、0だったら、失敗したとする
             } else {
                 // getGeneratedKeys()メソッドは、このStatementオブジェクトを実行した結果として作成された自動生成キーを取得します。
                 // このStatementオブジェクトがキーを生成しなかった場合は、空のResultSetオブジェクトが返されます
-                rs = pstmt.getGeneratedKeys(); // 結果セットに、自動生成キーを取得だけ取得したい 今回は、他は要らないので
+
+                 rs = pstmt.getGeneratedKeys(); // 結果セットに、自動生成キーを取得だけ取得したい 今回は、他は要らないので
+
                 if (rs.next()) { // １データしか、挿入しないから、while ではなくて if でいい
                     photoId = rs.getInt(1); // 結果セットの仮のテーブルの先頭のカラムを指定してる オートインクリメントの値
                     // 結果セットには、getGeneratedKeys() で、自動生成キーを取得だけ取得してるから１つのカラムだけがある
@@ -49,6 +54,7 @@ public class PhotoDAO {
             }
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
+            System.out.println(e.getMessage());
             return 0; // エラー発生した時は、0 の値を返してる 呼び出し元で、0 が入ってたら、エラーだとする
         } finally {
             if (rs != null) {

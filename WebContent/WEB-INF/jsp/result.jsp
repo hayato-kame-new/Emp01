@@ -15,6 +15,10 @@ if (action.equals("depAdd") || action.equals("depEdit")) {
   nextPath = "department.jsp";
   next = "部署一覧ページ";
 }
+if (action.equals("add") || action.equals("edit")) {
+  nextPath = "employee.jsp";
+    next = "従業員一覧ページ";
+}
 
 
 %>

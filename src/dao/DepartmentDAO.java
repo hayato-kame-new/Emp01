@@ -282,5 +282,59 @@ public class DepartmentDAO {
         return true;
     }
 
+    /**
+     * 部署名から、部署IDを取得する
+     * @param department
+     * @return departmentId
+     */
+    public String getDepartmentId(String department) {
+        String departmentId = null;
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            Class.forName(DRIVER_NAME);
+            conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);
+            String sql = "select departmentId from departments where department = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, department);
+            rs = pstmt.executeQuery();
+            if(rs.next()) { // departmentをuniqu にして一意にしてるから  while じゃなくて if にする 結果セットには1データだけしかないから
+                departmentId = rs.getString(1); // 先頭のカラムから取得してる  rs.getString("departmentId")でもいい
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+            return null; // エラーが発生したら、nullを返す
+        } finally {
+            if(rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    return null; // エラーが発生したら、nullを返す
+                }
+            }
+            if(pstmt != null) {
+                try {
+                    pstmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    return null; // エラーが発生したら、nullを返す
+                }
+            }
+            if(conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    return null; // エラーが発生したら、nullを返す
+                }
+            }
+        }
+        return departmentId;
+    }
+
 
 }

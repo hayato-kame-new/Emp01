@@ -110,5 +110,148 @@ public class EmployeeDAO {
         return empList; // 成功したら、リストを返す、１つも、中身のオブジェクトが無いときは、空のリストを返します。
     }
 
+    /**
+     * 社員IDを生成する 失敗したら、null返す
+     * @return employeeId
+     */
+    public String generatedId() {
+        String employeeId = null;
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            // JDBCドライバを読み込み
+            Class.forName(DRIVER_NAME);
+            // データベースへ接続
+            conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);
+            // SELECT文を準備
+            String sql = "select employeeId from employees order by employeeId desc limit 1";
+            // 準備したSQLをデータベースに届けるPrepareStatementインスタンスを取得する
+            pstmt = conn.prepareStatement(sql);
+            // SQLを実行し、結果はResultSetインスタンスに格納される
+            rs = pstmt.executeQuery();
+            // 一つ分のデータだけ結果セットに入ってるから while じゃなくて if
+            if (rs.next()) {
+                String result = rs.getString(1); // rs.getString("employeeId") でもいいです
+                employeeId = String.format("EMP%04d", Integer.parseInt(result.substring(3)) + 1);
+            } else { // まだ、テーブルに登録されていなかった場合 データが一つもない場合
+                employeeId = "EMP0001"; // 一番目のデータ
+            }
+        } catch (Exception e) { // Exceptionクラスのインスタンスでキャッチする
+            e.printStackTrace();
+            return null; // 失敗したら、nullを返す
+        } finally {
+            // PrepareStatementインスタンス、ResultSetインスタンスのクローズ処理
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    // クローズ処理失敗時の処理
+                    e.printStackTrace();
+                    return null; // 失敗したら、nullを返す
+                }
+            }
+            if (pstmt != null) {
+                try {
+                    pstmt.close();
+                } catch (SQLException e) {
+                    // クローズ処理失敗時の処理
+                    e.printStackTrace();
+                    return null;// 失敗したら、nullを返す
+                }
+            }
+            // データベース切断
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    // データベース切断失敗時の処理
+                    e.printStackTrace();
+                    return null;// 失敗したら、nullを返す
+                }
+            }
+        }
+        return employeeId;
+    }
+
+    /**
+     * 社員を新規登録する
+     * @param empBean
+     * @return true 成功<br>false 失敗
+     */
+    public boolean add(EmployeeBean empBean) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try {
+            // JDBCドライバを読み込み
+            Class.forName(DRIVER_NAME);
+            // データベースへ接続
+            conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);
+            // SELECT文を準備 PostgreSQL は、varchar以外には ?::integer  ?::status  ?::bytes  ?::date   などが必要です
+            String sql = "insert into employees values (?, ?, ?::integer, ?::integer, ?::integer, ?, ?, ?, ?, ?::date, ?::date)";
+            // 準備したSQLをデータベースに届けるPrepareStatementインスタンスを取得する
+            pstmt = conn.prepareStatement(sql);
+            // プレースホルダーにセットする
+            pstmt.setString(1, empBean.getEmployeeId());
+            pstmt.setString(2, empBean.getName());
+            pstmt.setInt(3, empBean.getAge());
+            pstmt.setInt(4, empBean.getGender());
+            pstmt.setInt(5, empBean.getPhotoId());
+            pstmt.setString(6, empBean.getZipNumber());
+            pstmt.setString(7, empBean.getPref());
+            pstmt.setString(8, empBean.getAddress());
+            pstmt.setString(9, empBean.getDepartmentId());
+
+            // empBean.getHireDate()   empBean.getRetirementDate() で得られる値は、java.util.Date型です。
+            java.util.Date utilHire = empBean.getHireDate(); // nullはない
+            java.util.Date utilRetire = empBean.getRetirementDate(); // nullありうる
+            // 入社日を java.sql.Date型に変換 入社日は、必ず入力してもらうので、 null はない
+            java.sql.Date sqlHire = new java.sql.Date(utilHire.getTime());
+
+            // 退社日を java.sql.Date型に変換 ただし、退職日は、nullの可能性がある
+            java.sql.Date sqlRetire = null;
+            if (utilRetire != null) { // nullだと変換するとエラー発生するので、nullじゃなかった時だけ変換する
+                sqlRetire = new java.sql.Date(utilRetire.getTime());
+            }
+            // セット
+            pstmt.setDate(10, sqlHire);
+            pstmt.setDate(11, sqlRetire);
+
+            // executeUpdateメソッドの戻り値は、更新された行数を表します
+            int result = pstmt.executeUpdate();
+            if (result != 1) {
+                return false; // 失敗したら false返す
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            // データベース接続やSQL実行失敗時の処理
+            // JDBCドライバが見つからなかったときの処理
+            e.printStackTrace();
+            return false; // 失敗したら false返す
+        } finally {
+            // PrepareStatementインスタンスのクローズ処理
+            if (pstmt != null) {
+                try {
+                    pstmt.close();
+                } catch (SQLException e) {
+                    // クローズ処理失敗時の処理
+                    e.printStackTrace();
+                    return false; // 失敗したら false返す
+                }
+            }
+            // データベース切断
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    // データベース切断失敗時の処理
+                    e.printStackTrace();
+                    return false; // 失敗したら false返す
+                }
+            }
+        }
+        return true;
+    }
 
 }
