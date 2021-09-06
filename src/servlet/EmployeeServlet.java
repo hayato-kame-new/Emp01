@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import dao.EmployeeDAO;
 import model.EmployeeBean;
 
 /**
@@ -37,11 +38,22 @@ public class EmployeeServlet extends HttpServlet {
         // Checkサーブレットで、入力チェックの際に、エラーメッセージのリストに要素が入ってると、またこの EmployeeServlet()にフォワードしてくる
         // そして、また入力をしてもらう actionは、
         String action = request.getParameter("action");
-        // エラーが発生した時には、要素が入ってるエラーリストをリクエストスコープから取得 ここでしないでjspでする
+         // actionの値が "add"の時は、新しいインスタンス(各フィールドは、各データ型の規定値)を生成してそれを リクエストスコープに保存して employeeAddEdit.jspへフォワードする
+        // actionの値が "edit"の時は、クエリーパラメータで送られ来た(formからGETアクセスだから)employeeIdを取得する
+        EmployeeBean empBean = null;
+        switch(action) {
+        case "add":
+            // 新規登録する時は、新しいインスタンスを生成 各フィールドは、それぞれのデータ型の規定値となってる
+            empBean = new EmployeeBean();
+            break;
+        case "edit":
+            // クエリーパラメータで送られ来たキーemployeeIdの 値を取得して、それを元に、データベースから該当するEmployeeBeanオブジェクトを取得してくる
+            String employeeId = request.getParameter("employeeId");  // 引数が、クエリパラメータのキーです
+            EmployeeDAO empDAO = new EmployeeDAO();
+            empBean = empDAO.findEmpBean(employeeId);
+            break;
+        }
 
-
-        // 新規登録するので、新しいインスタンスを生成 各フィールドは、それぞれのデータ型の規定値となってる
-        EmployeeBean empBean = new EmployeeBean();
         // リクエストスコープに保存する。リクエストスコープは、フォワードできる(リダイレクトはできない)
         // リクエストスコープに保存できるのは、参照型 クラス型のインスタンスだけ。自分で作ったクラスは、JavaBeansのクラスにすること
         request.setAttribute("empBean", empBean);

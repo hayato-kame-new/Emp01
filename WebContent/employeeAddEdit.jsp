@@ -7,10 +7,12 @@
 request.setCharacterEncoding("UTF-8");
 // EmployeeServletから、フォワードで送られて来た。リクエストスコープから取得する getAttributeメソッドを使う
 String action = (String) request.getAttribute("action");
-EmployeeBean empBean = (EmployeeBean) request.getAttribute("empBean");
+// 新規も編集も EmployeeServletから、EmployeeBeanオブジェクトが フォワードで送られて来ます　リクエストスコープから EmployeeBeanオブジェクトを取得
+EmployeeBean empBean = (EmployeeBean)request.getAttribute("empBean");
 
 String label = action.equals("add") ? "新規作成" : "編集";
 // 新規登録の時には、empBeanオブジェクトの各フィールドには、各データ型の規定値が デフォルトとして入っているので、String型などの参照型の規定値はnull だから
+// 編集の時には、
 String employeeId =empBean.getEmployeeId(); // 新規登録の時には、employeeIdは 表示しない
 // フォームに表示する場合に、参照型のフィールドの場合 null だったら、空文字を、フォームの初期値にします。 value属性の値が、フォームの初期値です。
 String name = empBean.getName() == null ? "" : empBean.getName();

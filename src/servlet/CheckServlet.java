@@ -43,6 +43,7 @@ public class CheckServlet extends HttpServlet {
 
     /**
      * @see HttpServlet#HttpServlet()
+     * employeeAddEdit.jspから、くる
      */
     public CheckServlet() {
         super();
@@ -72,7 +73,7 @@ public class CheckServlet extends HttpServlet {
         String action = request.getParameter("action"); // add もしくは edit
         // hiddenフィールドから 送られてきた photoId は、新規では 文字列の "0" が入ってる
         String strPhotoId = request.getParameter("photoId");
-        // int型に変換する これは、編集の時だけ使う
+        // int型に変換する これは、編集の時だけ使う 286行目付近で使う
         int photoId = Integer.parseInt(strPhotoId);
 
         /* まず、写真のアップロードを リクエストパラメータから取得して 入力チェックする*/
@@ -260,6 +261,14 @@ public class CheckServlet extends HttpServlet {
                         // ここに来たら成功してる
                     }
                 }
+                break; // case句を抜けるのに必要
+            case "edit":
+                // 編集の時には、EmployeeBeanオブジェクトに photoIdがすでにあるので 該当するphotosテーブルもデータはあります。
+                // 表示されてなくても、photoDataカラム と mimeカラム の値が null になってるだけです。77行目で photoIdを取得してます。
+                //  77行目で photoIdを取得してますので。このphotoIdで、もし、編集時に写真をアップロードしてきたら、photosテーブルに上書きします。
+
+
+
                 break; // case句を抜けるのに必要
             }
 

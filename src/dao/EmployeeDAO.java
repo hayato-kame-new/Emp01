@@ -254,4 +254,82 @@ public class EmployeeDAO {
         return true;
     }
 
+    public EmployeeBean findEmpBean(String employeeId) {
+        EmployeeBean empBean = null; // nullはスタック領域に代入してる。何も指し示していない。(参照してるものがない状態)
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            Class.forName(DRIVER_NAME); // JDBCドライバを読み込み
+            conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS); //
+            String sql = "select * from employees where employeeId = ?"; // SELECT文を準備
+            pstmt = conn.prepareStatement(sql); // 準備したSQLをデータベースに届けるPrepareStatementインスタンスを取得する
+            pstmt.setString(1, employeeId);
+            // SQLを実行し、結果はResultSetインスタンスに格納される
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                String name = rs.getString("name");
+                int age = rs.getInt("age");
+                int gender = rs.getInt("gender");
+                int photoId = rs.getInt("photoId");
+                String zipNumber = rs.getString("zipNumber");
+                String pref = rs.getString("pref");
+                String address = rs.getString("address");
+                String departmentId = rs.getString("departmentId");
+                // 結果セットから取得できるのは java.sql.Date型のオブジェクトです
+                java.sql.Date sqlHire = rs.getDate("hireDate");
+                java.sql.Date sqlRetire = rs.getDate("retirementDate");
+                // 入社日を、java.util.Date型に変換する 入社日は、nullではない
+                java.util.Date hireDate = new java.util.Date(sqlHire.getTime());
+                // 退社日を、java.util.Date型に変換する 退社日は、nullありうるので、nullを変換するとエラー発生する
+                java.util.Date retirementDate = null; // 結果セットから 取得したsqlRetire が nullだったら、java.util.Date型でも nullにする
+                if (sqlRetire != null) { // nullじゃないなら java.util.Date型に変換する
+                    retirementDate = new java.util.Date(sqlRetire.getTime());
+                }
+                // 引数ありのコンストラクタをよぶ newでピープ領域メモリ確保
+                empBean = new EmployeeBean(employeeId, name, age, gender, photoId, zipNumber, pref, address,
+                        departmentId, hireDate, retirementDate);
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            // データベース接続やSQL実行失敗時の処理
+            // JDBCドライバが見つからなかったときの処理
+            e.printStackTrace();
+            return null; // 失敗した時に、nullを返す
+        } finally {
+            // ResultSetインスタンスのクローズ処理
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    // クローズ処理失敗時の処理
+                    e.printStackTrace();
+                    return null; // 失敗した時に、nullを返す
+                }
+            }
+         // PrepareStatementインスタンスのクローズ処理
+            if (pstmt != null) {
+                try {
+                    pstmt.close();
+                } catch (SQLException e) {
+                    // クローズ処理失敗時の処理
+                    e.printStackTrace();
+                    return null; // 失敗した時に、nullを返す
+                }
+            }
+            // データベース切断
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    // データベース切断失敗時の処理
+                    e.printStackTrace();
+                    return null; // 失敗した時に、nullを返す
+                }
+            }
+        }
+        return empBean;
+    }
+
 }

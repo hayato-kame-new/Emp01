@@ -36,8 +36,21 @@ th {
 <tr>
 <td><%= empBean.getEmployeeId() %></td>
 <td><%= empBean.getName() %></td>
-<td></td>
-<td></td>
+<td>
+<!-- フォーム送信でも、 method="GET" にすれば、EmployeeServletのdoGetを実行できる
+method="GET" にすると、inputタグの内容は、クエリー文字列になって送られます URLの末尾に?employeeId=○○○&action=edit  という風になって送られます -->
+  <form action="EmployeeServlet" method="GET" >
+    <input type="hidden" name="employeeId" value="<%=empBean.getEmployeeId() %>" >
+    <input type="hidden" name="action" value="edit" >
+    <input type="submit" value="編集" />
+  </form>
+  <!-- aリンクでもいい、HTTPメソッドは、GETメソッドなので クエリー文字列で、送る -->
+<!-- <a href="EmployeeServlet?employeeId=<   %   =   empBean.getEmployeeId()%>&action=edit"><button type="button">編集</button></a>  -->
+
+</td>
+<td>
+
+</td>
 </tr>
 <% } %>
 </table>
