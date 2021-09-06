@@ -48,6 +48,9 @@ if (hireDate == null && retirementDate == null) { // 新規作成の時、
   hireStr = sdf.format(hireDate.getTime()); // Date型の入社日を 表示用文字列にする
   retireStr = sdf.format(retirementDate.getTime()); // Date型の退社日を 表示用文字列にする
 }
+
+// 入力チェックしたときに、エラーが出たら、リクエストスコープにエラーリストが保存されてる CheckServletの 177行目で request.setAttribute("errMsgList", errMsgList);
+List<String> errMsgList = (List<String>)request.getAttribute("errMsgList");
 %>
 
 <!DOCTYPE html>
@@ -60,7 +63,11 @@ if (hireDate == null && retirementDate == null) { // 新規作成の時、
   <h2>
     社員データを<%=label%>します
   </h2>
-
+  <p>(<small style="color:red;">※</small>)印は、入力必須です。</p>
+  <!--  != null だけでもいい -->
+  <% if(errMsgList != null && errMsgList.size() != 0) {%>
+  <p><%=errMsgList %></p>
+<% } %>
   <!-- フォーム送信先は、チェック用サーブレットです。
  まず、photosテーブルについて操作をできるようにする
  CheckServletでは、@MultipartConfigアノテーションを クラス宣言の上に付けてください -->
@@ -76,13 +83,13 @@ if (hireDate == null && retirementDate == null) { // 新規作成の時、
     </p>
     <% } %>
     <p>
-      名前:<input type="text" name="name" value="<%=name%>" />
+      名前(<small style="color:red;">※</small>):<input type="text" name="name" value="<%=name%>" />
     </p>
     <p>
-      年齢:<input type="text" name="age" value="<%=empBean.getAge()%>" />
+      年齢(<small style="color:red;">※</small>):<input type="text" name="age" value="<%=empBean.getAge()%>" />
     </p>
     <p>
-      性別:
+      性別(<small style="color:red;">※</small>):
       <%
     switch (gender) {
     case 0: //新規の時は 0 がint型の規定値なので入っています。
@@ -115,16 +122,17 @@ if (hireDate == null && retirementDate == null) { // 新規作成の時、
     </p>
     <!-- 写真表示ここまで -->
     <!-- 写真アップロード formタグには enctype="multipart/form-data" が必要です。 また、送信先のサーブレットには、クラス宣言のところに @MultipartConfigアノテーション が必要です -->
-    <input type="file" name="image" accept=".jpeg, .jpg, .png" /> <input
+    (<small style="color:red;">※</small>)<input type="file" name="image" accept=".jpeg, .jpg, .png" /> <input
       type="hidden" name="photoId" value="" />
     <!-- 写真アップロードここまで -->
 
     <p>
-      郵便番号:<input type="text" name="zipNumber" value="<%=zipNumber%>" />
+    <small>半角数字で ×××-×××× の形式で入力してください。</small><br />
+      郵便番号(<small style="color:red;">※</small>):<input type="text" name="zipNumber" value="<%=zipNumber%>" />
     </p>
 
     <p>
-      都道府県:<select name="pref">
+      都道府県(<small style="color:red;">※</small>):<select name="pref">
         <%
         if (pref == null) { // 新規の時は、参照型フィールドの規定値の null が入ってる
           for (String p : prefList) {
@@ -152,11 +160,11 @@ if (hireDate == null && retirementDate == null) { // 新規作成の時、
     </p>
 
     <p>
-      住所:<input type="text" name="address" value="<%=address%>" />
+      住所(<small style="color:red;">※</small>):<input type="text" name="address" value="<%=address%>" />
     </p>
 
     <p>
-      所属:<select name="department">
+      所属(<small style="color:red;">※</small>):<select name="department">
         <%
         if (departmentId == null) { // 新規の時には null が入ってる
           for (DepartmentBean depBean : depList) {
@@ -182,12 +190,12 @@ if (hireDate == null && retirementDate == null) { // 新規作成の時、
     </p>
 
     <p>
-    <small>半角数字で ××××-××-×× の形式で入力してください。 例( 2016-03-20 )</small>
-    入社日:<input type="text" name="hireDate" value="<%=hireStr %>" >
+    <small>半角数字で ××××-××-×× の形式で入力してください。 例( 2016-03-20 )</small><br />
+    入社日(<small style="color:red;">※</small>):<input type="text" name="hireDate" value="<%=hireStr %>" >
     </p>
 
     <p>
-    <small>半角数字で ××××-××-×× の形式で入力してください。 例( 2016-03-20 )</small>
+    <small>半角数字で ××××-××-×× の形式で入力してください。 例( 2016-03-20 )</small><br />
       退社日:<input type="text" name="retirementDate" value=""<%=retireStr %> >
     </p>
     <input type="submit" value="送信" />

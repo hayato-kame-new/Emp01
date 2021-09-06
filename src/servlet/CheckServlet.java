@@ -133,6 +133,12 @@ public class CheckServlet extends HttpServlet {
             errMsgList.add("性別が選択されていません");
         }
 
+        if (zipNumber == null || zipNumber.length() == 0) {
+            errMsgList.add("郵便番号が入力されていません");
+        } else if (!PATTERN_ZIPNUMBER.matcher(zipNumber).matches()) {
+            errMsgList.add("郵便番号は半角数字でハイフン(-)を入れて入力してください　例( 314-0114 )");
+        }
+
         if (pref == null || pref.length() == 0) {
             errMsgList.add("都道府県が選択されていません");
         }
@@ -173,9 +179,11 @@ public class CheckServlet extends HttpServlet {
 
         // エラーリストのサイズが 0 以外の時(つまり、エラー発生)また、再入力してもらう
         if (errMsgList.size() != 0) {
+            // エラー発生した時に、エラーリストをリクエストスコープにセットしてフォワードする
+            request.setAttribute("errMsgList", errMsgList);
             // フォワード先のパス リクエストスコープにセットして、フォーワードする(リクエストスコープはリダイレクトはできない)
             path = "EmployeeServlet"; // また、action が add の場合は、新インスタンス生成して送ることになる
-
+            // ※へ行く
         } else {
             // エラーリストのサイズが 0の時は、次は、データベースの操作へ行く
             // データベース成功後、失敗後、結果ページへフォワードするのでフォワード先のパスは
@@ -256,13 +264,14 @@ public class CheckServlet extends HttpServlet {
             }
 
         }
-
+        // ※ここに来る
         // リクエストスコープに保存
         request.setAttribute("action", action);
-        request.setAttribute("errMsgList", errMsgList); // エラー無い時には、フォワード先では、リストオブジェクトの要素数が 0 です。nullじゃない。
+
         request.setAttribute("msg", msg);
         request.setAttribute("title", title);
-        // エラーリストの中身の要素数が 0以外の時、（つまり、エラーはある）再度入力してもらう
+        // エラーリストの中身の要素数が 0以外の時、（つまり、エラーはある）再度入力してもらう  179行目あたり  path = "EmployeeServlet"; になってる
+        // エラーなくて、データベース処理完了後は、結果ページがフォワード先になってる 184行目あたり  path = "/WEB-INF/jsp/result.jsp";
         RequestDispatcher dispatcher = request.getRequestDispatcher(path);
         dispatcher.forward(request, response);
 

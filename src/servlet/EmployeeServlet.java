@@ -34,7 +34,11 @@ public class EmployeeServlet extends HttpServlet {
         // リクエスト情報の文字化け防止
         request.setCharacterEncoding("UTF-8");
         // 新規登録は、employeeAddEdit.jsp の aリンクのクエリーパラメータから、送られてくる
+        // Checkサーブレットで、入力チェックの際に、エラーメッセージのリストに要素が入ってると、またこの EmployeeServlet()にフォワードしてくる
+        // そして、また入力をしてもらう actionは、
         String action = request.getParameter("action");
+        // エラーが発生した時には、要素が入ってるエラーリストをリクエストスコープから取得 ここでしないでjspでする
+
 
         // 新規登録するので、新しいインスタンスを生成 各フィールドは、それぞれのデータ型の規定値となってる
         EmployeeBean empBean = new EmployeeBean();
