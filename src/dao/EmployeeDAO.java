@@ -403,4 +403,70 @@ public class EmployeeDAO {
         return true;
     }
 
+    public boolean delete(String employeeId, int photoId) {
+        Connection conn = null;
+        PreparedStatement pstmt1 = null;
+        PreparedStatement pstmt2 = null;
+        try {
+             Class.forName(DRIVER_NAME); // JDBCドライバを読み込み
+             conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);
+             String sql1 ="delete from employees where employeeId = ?";
+             String sql2 = "delete from photos where photoId = ? ";
+             pstmt1 = conn.prepareStatement(sql1);
+
+             pstmt2 = conn.prepareStatement(sql2);
+
+             pstmt1.setString(1, employeeId);
+
+             pstmt2.setInt(1, photoId);
+
+            // トランザクション処理を開始
+             conn.setAutoCommit(false);
+             pstmt1.executeUpdate();
+             pstmt2.executeUpdate();
+             conn.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("エラーメッセージ:" + e.getMessage());
+            // 途中何かエラー起きたら　ロールバック処理をする
+            try {
+                conn.rollback();
+            } catch (SQLException e2) {
+                e2.printStackTrace();
+                return false; // ロールバック処理をしてから、falseを返す
+            }
+        } finally {
+            // PrepareStatementインスタンスのクローズ処理
+            if (pstmt1 != null) {
+                try {
+                    pstmt1.close();
+                } catch (SQLException e) {
+                    // クローズ処理失敗時の処理
+                    e.printStackTrace();
+                    return false; // 失敗した時に、falseを返す
+                }
+            }
+            if (pstmt2 != null) {
+                try {
+                    pstmt2.close();
+                } catch (SQLException e) {
+                    // クローズ処理失敗時の処理
+                    e.printStackTrace();
+                    return false; // 失敗した時に、falseを返す
+                }
+            }
+            // データベース切断
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    // クローズ処理失敗時の処理
+                    e.printStackTrace();
+                    return false; // 失敗した時に、falseを返す
+                }
+            }
+        }
+        return true;
+    }
+
 }

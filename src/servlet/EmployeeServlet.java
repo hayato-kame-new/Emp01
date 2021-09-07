@@ -21,6 +21,7 @@ public class EmployeeServlet extends HttpServlet {
 
     /**
      * @see HttpServlet#HttpServlet()
+     * 表示を行うサーブレット
      */
     public EmployeeServlet() {
         super();
@@ -39,17 +40,18 @@ public class EmployeeServlet extends HttpServlet {
         // そして、また入力をしてもらう actionは、
         String action = request.getParameter("action");
          // actionの値が "add"の時は、新しいインスタンス(各フィールドは、各データ型の規定値)を生成してそれを リクエストスコープに保存して employeeAddEdit.jspへフォワードする
-        // actionの値が "edit"の時は、クエリーパラメータで送られ来た(formからGETアクセスだから)employeeIdを取得する
+        // actionの値が "edit" "delete" の時は、クエリーパラメータで送られ来た(formからGETアクセスだから)employeeIdを取得する
+        EmployeeDAO empDAO = new EmployeeDAO();
         EmployeeBean empBean = null;
+        // 編集時 クエリーパラメータで送られ来たキーemployeeIdの 値を取得して、それを元に、データベースから該当するEmployeeBeanオブジェクトを取得してくる
+        String employeeId = request.getParameter("employeeId");  // 引数が、クエリパラメータのキーです
+
         switch(action) {
         case "add":
             // 新規登録する時は、新しいインスタンスを生成 各フィールドは、それぞれのデータ型の規定値となってる
             empBean = new EmployeeBean();
             break;
         case "edit":
-            // クエリーパラメータで送られ来たキーemployeeIdの 値を取得して、それを元に、データベースから該当するEmployeeBeanオブジェクトを取得してくる
-            String employeeId = request.getParameter("employeeId");  // 引数が、クエリパラメータのキーです
-            EmployeeDAO empDAO = new EmployeeDAO();
             empBean = empDAO.findEmpBean(employeeId);
             break;
         }

@@ -10,6 +10,9 @@ import java.sql.Statement;
 
 public class PhotoDAO {
 
+    // photosテーブルをのデータを削除するときは、トランザクションで、employeesテーブルのデータ削除と同時に行うので、
+    // EmployeeDAOの方に、 deleteメソッドを用意してる
+
     final String DRIVER_NAME = "org.postgresql.Driver";
     final String JDBC_URL = "jdbc:postgresql://localhost:5432/emp01";
     final String DB_USER = "postgres";

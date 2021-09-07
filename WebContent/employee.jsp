@@ -5,6 +5,8 @@
 <%
 // リクエスト情報の文字化け防止
 request.setCharacterEncoding("UTF-8");
+// 削除した後のメッセージを取得 リクエストスコープから取得する
+String deleteMsg = (String)request.getAttribute("deleteMsg");
 
 // 従業員一覧表示用に、従業員リストの取得
 EmployeeDAO empDAO = new EmployeeDAO();
@@ -27,7 +29,13 @@ th {
 </head>
 <body>
 <p>社員一覧:</p>
-
+<p>
+<%
+if (deleteMsg != null) {
+  out.print(deleteMsg);
+}
+%>
+</p>
 <table border="1">
 <tr>
 <th>社員ID</th><th>名前</th><th colspan="2"></th>
@@ -49,6 +57,11 @@ method="GET" にすると、inputタグの内容は、クエリー文字列に�
 
 </td>
 <td>
+  <form action="DeleteServlet" method="POST" >
+    <input type="hidden" name="employeeId" value="<%=empBean.getEmployeeId() %>" >
+    <input type="hidden" name="photoId" value="<%=empBean.getPhotoId() %>" >
+    <input type="submit"  value="削除" />
+  </form>
 
 </td>
 </tr>
@@ -56,7 +69,8 @@ method="GET" にすると、inputタグの内容は、クエリー文字列に�
 </table>
 
 <p>
-<!-- aリンクだと、HTTPメソッドは、GETメソッドなので クエリー文字列で、送る -->
+<!-- aリンクだと、HTTPメソッドは、GETメソッドなので クエリー文字列で、送る formタグでもmethod="GET"にして送ると、hiddenタグ内容が クエリー文字列として送られます
+-->
 <a href="EmployeeServlet?action=add"><button type="button">新規追加</button></a>
 </p>
 
