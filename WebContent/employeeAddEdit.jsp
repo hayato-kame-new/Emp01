@@ -28,9 +28,11 @@ List<String> prefList = new ArrayList<String>(Arrays.asList("東京都", "神奈
 String address = empBean.getAddress() == null ? "" : empBean.getAddress();
 // 新規との時は、 参照型フィールドの規定値null が入ってる、nullのまま
 String departmentId = empBean.getDepartmentId();
-// 部署一覧リスト
+
+// DepartmentBeanオブジェクト のリスト
 DepartmentDAO depDAO = new DepartmentDAO();
 List<DepartmentBean> depList = depDAO.findAll();
+
 // 入社日は、 新規では null が入ってる  編集では必ず入ってる(Date型)
 Date hireDate = empBean.getHireDate();
 // 退社日は、新規の時は null   編集の時も null ありうる 入っていれば Date型で渡ってくる

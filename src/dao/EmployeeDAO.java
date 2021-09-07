@@ -19,6 +19,7 @@ public class EmployeeDAO {
 
     /**
      * 社員のリストを取得する 失敗した時、null返す
+     *  一件もなかった場合には、空のリストを返す
      * @return empList
      */
     public List<EmployeeBean> findAll() {
@@ -268,7 +269,7 @@ public class EmployeeDAO {
 
         try {
             Class.forName(DRIVER_NAME); // JDBCドライバを読み込み
-            conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS); //
+            conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS); // データベースへ接続
             String sql = "select * from employees where employeeId = ?"; // SELECT文を準備
             pstmt = conn.prepareStatement(sql); // 準備したSQLをデータベースに届けるPrepareStatementインスタンスを取得する
             pstmt.setString(1, employeeId);
@@ -313,7 +314,7 @@ public class EmployeeDAO {
                     return null; // 失敗した時に、nullを返す
                 }
             }
-         // PrepareStatementインスタンスのクローズ処理
+            // PrepareStatementインスタンスのクローズ処理
             if (pstmt != null) {
                 try {
                     pstmt.close();
@@ -346,40 +347,40 @@ public class EmployeeDAO {
         Connection conn = null;
         PreparedStatement pstmt = null;
         try {
-             Class.forName(DRIVER_NAME); // JDBCドライバを読み込み
-             conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);
-             String sql = "update employees set (name, age, gender, photoId, zipNumber, pref, address, departmentId, hireDate, retirementDate) = (?, ?::integer, ?::integer, ?::integer, ?, ?, ?, ?, ?::date, ?::date) where employeeId = ?";
-             pstmt = conn.prepareStatement(sql);
-             // 更新するための値をセット
-             pstmt.setString(1, empBean.getName());
-             pstmt.setInt(2, empBean.getAge());
-             pstmt.setInt(3, empBean.getGender());
-             pstmt.setInt(4, empBean.getPhotoId());
-             pstmt.setString(5, empBean.getZipNumber());
-             pstmt.setString(6, empBean.getPref());
-             pstmt.setString(7, empBean.getAddress());
-             pstmt.setString(8, empBean.getDepartmentId());
-             // empBean.getHireDate()で取得したのは java.util.Date型なので、データベースのカラムに登録するには、java.sql.Date型に変換する必要がある
-             // 入社日は、nullでは無いので、変換できる
-             java.sql.Date sqlHire = new java.sql.Date(empBean.getHireDate().getTime());
-             pstmt.setDate(9, sqlHire);
-             // 退職日は、 nullありうるので nullじゃなかったら、変換する
-             java.sql.Date sqlRetire = null; // nullの時には、nullにする
-             if (empBean.getRetirementDate() != null) {
-                 sqlRetire = new java.sql.Date(empBean.getRetirementDate().getTime());
-             }
-             pstmt.setDate(10, sqlRetire);
-             pstmt.setString(11, empBean.getEmployeeId());
-             // 更新を実行する
-             int result = pstmt.executeUpdate(); //PSQLException例外発生の可能性ある
-             if (result != 1) {
-                 return false; // 失敗したら falseを返す
-             }
+            Class.forName(DRIVER_NAME); // JDBCドライバを読み込み
+            conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);// データベースへ接続
+            String sql = "update employees set (name, age, gender, photoId, zipNumber, pref, address, departmentId, hireDate, retirementDate) = (?, ?::integer, ?::integer, ?::integer, ?, ?, ?, ?, ?::date, ?::date) where employeeId = ?";
+            pstmt = conn.prepareStatement(sql);
+            // 更新するための値をセット
+            pstmt.setString(1, empBean.getName());
+            pstmt.setInt(2, empBean.getAge());
+            pstmt.setInt(3, empBean.getGender());
+            pstmt.setInt(4, empBean.getPhotoId());
+            pstmt.setString(5, empBean.getZipNumber());
+            pstmt.setString(6, empBean.getPref());
+            pstmt.setString(7, empBean.getAddress());
+            pstmt.setString(8, empBean.getDepartmentId());
+            // empBean.getHireDate()で取得したのは java.util.Date型なので、データベースのカラムに登録するには、java.sql.Date型に変換する必要がある
+            // 入社日は、nullでは無いので、変換できる
+            java.sql.Date sqlHire = new java.sql.Date(empBean.getHireDate().getTime());
+            pstmt.setDate(9, sqlHire);
+            // 退職日は、 nullありうるので nullじゃなかったら、変換する
+            java.sql.Date sqlRetire = null; // nullの時には、nullにする
+            if (empBean.getRetirementDate() != null) {
+                sqlRetire = new java.sql.Date(empBean.getRetirementDate().getTime());
+            }
+            pstmt.setDate(10, sqlRetire);
+            pstmt.setString(11, empBean.getEmployeeId());
+            // 更新を実行する
+            int result = pstmt.executeUpdate(); //PSQLException例外発生の可能性ある
+            if (result != 1) {
+                return false; // 失敗したら falseを返す
+            }
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
             return false; // 失敗したら falseを返す
         } finally {
-         // PrepareStatementインスタンスのクローズ処理
+            // PrepareStatementインスタンスのクローズ処理
             if (pstmt != null) {
                 try {
                     pstmt.close();
@@ -408,23 +409,23 @@ public class EmployeeDAO {
         PreparedStatement pstmt1 = null;
         PreparedStatement pstmt2 = null;
         try {
-             Class.forName(DRIVER_NAME); // JDBCドライバを読み込み
-             conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);
-             String sql1 ="delete from employees where employeeId = ?";
-             String sql2 = "delete from photos where photoId = ? ";
-             pstmt1 = conn.prepareStatement(sql1);
+            Class.forName(DRIVER_NAME); // JDBCドライバを読み込み
+            conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);// データベースへ接続
+            String sql1 = "delete from employees where employeeId = ?";
+            String sql2 = "delete from photos where photoId = ? ";
+            pstmt1 = conn.prepareStatement(sql1);
 
-             pstmt2 = conn.prepareStatement(sql2);
+            pstmt2 = conn.prepareStatement(sql2);
 
-             pstmt1.setString(1, employeeId);
+            pstmt1.setString(1, employeeId);
 
-             pstmt2.setInt(1, photoId);
+            pstmt2.setInt(1, photoId);
 
             // トランザクション処理を開始
-             conn.setAutoCommit(false);
-             pstmt1.executeUpdate();
-             pstmt2.executeUpdate();
-             conn.commit();
+            conn.setAutoCommit(false);
+            pstmt1.executeUpdate();
+            pstmt2.executeUpdate();
+            conn.commit();
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("エラーメッセージ:" + e.getMessage());
@@ -467,6 +468,162 @@ public class EmployeeDAO {
             }
         }
         return true;
+    }
+
+    /**
+     * 検索用のメソッドです。データベースで何らかのエラー発生したら nullを返します。
+     *  検索が成功したら、リストを返します。 成功した時に、何もヒットしなかった時には、空の [] を返します。ArrayListは、内部は配列なので
+     * @param departmentId<br />   未選択の時には、 "" 空文字 が入ってきます。
+     * @param employeeId<br />    未選択の時には、 "" 空文字 が入ってきます。
+     * @param word<br />    未選択の時には、 "" 空文字 が入ってきます。
+     * @return empList
+     */
+    public List<EmployeeBean> search(String departmentId, String employeeId, String word) {
+
+        List<EmployeeBean> empList = new ArrayList<EmployeeBean>();
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            Class.forName(DRIVER_NAME); // JDBCドライバを読み込み
+            conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS); // データベースへ接続
+            String sql = "select * from employees"; // 半角空白を入れて繋ぐこと
+            String where = ""; // 上のsql文 に繋ぐsqlの文を 動的に生成するためのもの
+            int depIdIndex = 0;
+            int empIdIndex = 0;
+            int wordIndex = 0;
+
+            if (departmentId.equals("")) { // 未指定だった時
+                // 何もしない
+            } else { // 部署名が選択されていた時
+                where = " where departmentId = ?"; // 代入する
+                // 一番目のプレースホルダーになる
+                depIdIndex = 1;
+            }
+
+            if (employeeId.equals("")) { // 何も入力してない時
+                // 何もしない
+            } else { // 社員IDの欄に、何か入力されてた時
+                if (where.equals("")) {
+                    where += " where employeeId = ?"; // 二項演算子の加算代入演算子を使って、連結
+                    // 一番目のプレースホルダーになる
+                } else {
+                    where += " and employeeId = ?";
+                    // 二番目のプレースホルダーになる
+                }
+                empIdIndex = depIdIndex + 1;
+            }
+
+            if (word.equals("")) { // 何も入力してない時
+                // 何もしない
+            } else { // 名前に含む文字の欄に、何か入力されてた時
+                if (where.equals("")) {
+                    where += " where name like ?"; // 二項演算子の加算代入演算子を使って、連結
+                    // 一番目のプレースホルダーになる
+                    wordIndex = 1;
+                } else if (where.equals(" where departmentId = ?")) {
+                    where += " and name like ?";
+                    // 二番目のプレースホルダーになる
+                    wordIndex = 2;
+                } else if (where.equals(" where employeeId = ?")) {
+                    where += " and name like ?";
+                    // 二番目のプレースホルダーになる
+                    wordIndex = 2;
+                } else if (where.equals(" where departmentId = ? and employeeId = ?")) {
+                    where += " and name like ?";
+                    // 三番目のプレースホルダーになる
+                    wordIndex = 3;
+                }
+            }
+            // PreparedStatementインタフェースのオブジェクトをコネクションから作成します
+            pstmt = conn.prepareStatement(sql + where);
+            if (depIdIndex > 0) {
+                pstmt.setString(depIdIndex, departmentId);
+            }
+            if (empIdIndex > 0) {
+                pstmt.setString(empIdIndex, employeeId);
+            }
+            if (wordIndex > 0) {
+                pstmt.setString(wordIndex, "%" + word + "%");
+            }
+            // SQLを実行し、結果はResultSetインスタンスに格納される
+            rs = pstmt.executeQuery();
+            //  結果を１レコードづつ取得する
+            while (rs.next()) {
+                String employeeId2 = rs.getString("employeeId");
+                String name = rs.getString("name");
+                int age = rs.getInt("age");
+                int gender = rs.getInt("gender");
+                int photoId = rs.getInt("photoId");
+                String zipNumber = rs.getString("zipNumber");
+                String pref = rs.getString("pref");
+                String address = rs.getString("address");
+                String departmentId2 = rs.getString("departmentId");
+                // 入社日を   sql.Date型から、 util.Date型に変換
+                java.sql.Date sqlHire = rs.getDate("hireDate");
+                java.util.Date hireDate = new java.util.Date(sqlHire.getTime());
+
+                // 退社日を   sql.Date型から、 util.Date型に変換
+                java.sql.Date sqlRetire = rs.getDate("retirementDate");
+                java.util.Date retirementDate = null;
+                if (sqlRetire != null) { // null値だとここでエラーだったので　null回避した
+                    retirementDate = new java.util.Date(sqlRetire.getTime());
+                }
+                // EmployeeBeanインスタンスにデータを保存する
+                EmployeeBean empBean = new EmployeeBean();
+                // 取得したデータを EmployeeBeanインスタンス にセットする
+                empBean.setEmployeeId(employeeId2);
+                empBean.setName(name);
+                empBean.setAge(age);
+                empBean.setGender(gender);
+                empBean.setPhotoId(photoId);
+                empBean.setZipNumber(zipNumber);
+                empBean.setPref(pref);
+                empBean.setAddress(address);
+                empBean.setDepartmentId(departmentId2);
+                empBean.setHireDate(hireDate);
+                empBean.setRetirementDate(retirementDate);
+                //リストに追加
+                empList.add(empBean);
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            // データベース接続やSQL実行失敗時の処理
+            // JDBCドライバが見つからなかったときの処理
+            e.printStackTrace();
+            return null; // エラーがあったら nullを返す
+        } finally {
+            // PrepareStatementインスタンス、ResultSetインスタンスのクローズ処理
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    // クローズ処理失敗時の処理
+                    e.printStackTrace();
+                    return null; // エラーがあったら nullを返す
+                }
+            }
+            if (pstmt != null) {
+                try {
+                    pstmt.close();
+                } catch (SQLException e) {
+                    // クローズ処理失敗時の処理
+                    e.printStackTrace();
+                    return null; // エラーがあったら nullを返す
+                }
+            }
+            // データベース切断
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    // データベース切断失敗時の処理
+                    e.printStackTrace();
+                    return null; // エラーがあったら nullを返す
+                }
+            }
+        }
+        return empList;
     }
 
 }

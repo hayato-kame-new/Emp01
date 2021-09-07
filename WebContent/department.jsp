@@ -31,7 +31,7 @@ if (msg != null) {
 }
 %>
 
-  <p>部署一覧:</p>
+  <h2>部署一覧:</h2>
   <table border="1">
     <tr>
       <th>ID</th>
