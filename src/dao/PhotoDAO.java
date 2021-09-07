@@ -16,6 +16,7 @@ public class PhotoDAO {
     final String DB_PASS = "postgres";
 
     /**
+     * 新しい従業員を登録する時に、写真をアップロードしてもらう
      * アップロードした画像のファイルデータをphotosテーブルへ新規登録し、そのphotoIdが返る photoIdに 0 が入ってたら、失敗
      * @param photoData
      * @param mime
@@ -45,7 +46,7 @@ public class PhotoDAO {
                 // getGeneratedKeys()メソッドは、このStatementオブジェクトを実行した結果として作成された自動生成キーを取得します。
                 // このStatementオブジェクトがキーを生成しなかった場合は、空のResultSetオブジェクトが返されます
 
-                 rs = pstmt.getGeneratedKeys(); // 結果セットに、自動生成キーを取得だけ取得したい 今回は、他は要らないので
+                rs = pstmt.getGeneratedKeys(); // 結果セットに、自動生成キーを取得だけ取得したい 今回は、他は要らないので
 
                 if (rs.next()) { // １データしか、挿入しないから、while ではなくて if でいい
                     photoId = rs.getInt(1); // 結果セットの仮のテーブルの先頭のカラムを指定してる オートインクリメントの値
@@ -198,6 +199,57 @@ public class PhotoDAO {
             }
         }
         return mime;
+    }
+
+    /**
+     * photosテーブルの更新
+     * @param photoId
+     * @param photoData
+     * @param mime
+     * @return true:成功<br />false:失敗
+     */
+    public boolean photoDataUpdate(int photoId, byte[] photoData, String mime) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+
+        try {
+            Class.forName(DRIVER_NAME);
+            conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);
+            String sql = "update photos set photoData = ?, mime = ? where photoId = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setBytes(1, photoData);
+            pstmt.setString(2, mime);
+            pstmt.setInt(3, photoId);
+         // update文の実行 戻り値は、更新したデータ数 int型が返る
+            int result = pstmt.executeUpdate();
+            if (result != 1) { // photoIdカラムは、主キーで、ユニークだから、成功すれば一つのデータだけ更新されます
+                return false; // 1 じゃない時は、失敗だから falseを返します。
+            }
+            // ここまでくれば 成功
+        } catch (SQLException | ClassNotFoundException e) {
+            // データベース接続やSQL実行失敗時の処理
+            // JDBCドライバが見つからなかったときの処理
+            e.printStackTrace();
+            return false; // 失敗したら falseを返す
+        } finally {
+            if (pstmt != null) {
+                try {
+                    pstmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    return false; // 失敗したら falseを返す
+                }
+            }
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    return false; // 失敗したら falseを返す
+                }
+            }
+        }
+        return true;
     }
 
 }

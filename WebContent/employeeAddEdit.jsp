@@ -198,7 +198,7 @@ List<String> errMsgList = (List<String>)request.getAttribute("errMsgList");
 
     <p>
     <small>半角数字で ××××-××-×× の形式で入力してください。 例( 2016-03-20 )</small><br />
-      退社日:<input type="text" name="retirementDate" value=""<%=retireStr %> >
+      退社日:<input type="text" name="retirementDate" value="<%=retireStr %>" >
     </p>
     <input type="submit" value="送信" />
     <!-- CheckServletへ行く -->

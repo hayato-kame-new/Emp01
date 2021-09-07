@@ -18,7 +18,7 @@ public class EmployeeDAO {
     final String DB_PASS = "postgres";
 
     /**
-     * 従業員のリストを取得する 失敗した時、null返す
+     * 社員のリストを取得する 失敗した時、null返す
      * @return empList
      */
     public List<EmployeeBean> findAll() {
@@ -254,6 +254,11 @@ public class EmployeeDAO {
         return true;
     }
 
+    /**
+     * employeeIdを元にEmployeeBeanオブジェクトを検索して返す
+     * @param employeeId
+     * @return empBean
+     */
     public EmployeeBean findEmpBean(String employeeId) {
         EmployeeBean empBean = null; // nullはスタック領域に代入してる。何も指し示していない。(参照してるものがない状態)
 
@@ -288,7 +293,7 @@ public class EmployeeDAO {
                 if (sqlRetire != null) { // nullじゃないなら java.util.Date型に変換する
                     retirementDate = new java.util.Date(sqlRetire.getTime());
                 }
-                // 引数ありのコンストラクタをよぶ newでピープ領域メモリ確保
+                // 引数ありのコンストラクタをよぶ   newでピープ領域メモリ確保
                 empBean = new EmployeeBean(employeeId, name, age, gender, photoId, zipNumber, pref, address,
                         departmentId, hireDate, retirementDate);
             }
@@ -330,6 +335,72 @@ public class EmployeeDAO {
             }
         }
         return empBean;
+    }
+
+    /**
+     * employeesテーブルの更新
+     * @param empBean
+     * @return true 成功<br>false 失敗
+     */
+    public boolean update(EmployeeBean empBean) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try {
+             Class.forName(DRIVER_NAME); // JDBCドライバを読み込み
+             conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);
+             String sql = "update employees set (name, age, gender, photoId, zipNumber, pref, address, departmentId, hireDate, retirementDate) = (?, ?::integer, ?::integer, ?::integer, ?, ?, ?, ?, ?::date, ?::date) where employeeId = ?";
+             pstmt = conn.prepareStatement(sql);
+             // 更新するための値をセット
+             pstmt.setString(1, empBean.getName());
+             pstmt.setInt(2, empBean.getAge());
+             pstmt.setInt(3, empBean.getGender());
+             pstmt.setInt(4, empBean.getPhotoId());
+             pstmt.setString(5, empBean.getZipNumber());
+             pstmt.setString(6, empBean.getPref());
+             pstmt.setString(7, empBean.getAddress());
+             pstmt.setString(8, empBean.getDepartmentId());
+             // empBean.getHireDate()で取得したのは java.util.Date型なので、データベースのカラムに登録するには、java.sql.Date型に変換する必要がある
+             // 入社日は、nullでは無いので、変換できる
+             java.sql.Date sqlHire = new java.sql.Date(empBean.getHireDate().getTime());
+             pstmt.setDate(9, sqlHire);
+             // 退職日は、 nullありうるので nullじゃなかったら、変換する
+             java.sql.Date sqlRetire = null; // nullの時には、nullにする
+             if (empBean.getRetirementDate() != null) {
+                 sqlRetire = new java.sql.Date(empBean.getRetirementDate().getTime());
+             }
+             pstmt.setDate(10, sqlRetire);
+             pstmt.setString(11, empBean.getEmployeeId());
+             // 更新を実行する
+             int result = pstmt.executeUpdate(); //PSQLException例外発生の可能性ある
+             if (result != 1) {
+                 return false; // 失敗したら falseを返す
+             }
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+            return false; // 失敗したら falseを返す
+        } finally {
+         // PrepareStatementインスタンスのクローズ処理
+            if (pstmt != null) {
+                try {
+                    pstmt.close();
+                } catch (SQLException e) {
+                    // クローズ処理失敗時の処理
+                    e.printStackTrace();
+                    return false; // 失敗した時に、falseを返す
+                }
+            }
+            // データベース切断
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    // クローズ処理失敗時の処理
+                    e.printStackTrace();
+                    return false; // 失敗した時に、falseを返す
+                }
+            }
+        }
+        return true;
     }
 
 }
