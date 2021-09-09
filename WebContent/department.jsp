@@ -10,7 +10,7 @@ List<DepartmentBean> depList = new ArrayList<DepartmentBean>();
 depList = depDAO.findAll();
 
 // 削除しようとして失敗した時のエラーメッセージ
-String msg = (String)request.getAttribute("msg");
+String msg = (String) request.getAttribute("msg");
 %>
 
 <!DOCTYPE html>
@@ -25,13 +25,23 @@ th {
 </style>
 </head>
 <body>
-<%
-if (msg != null) {
-  out.print(msg);
-}
-%>
-
+  <%
+  if (msg != null) {
+    out.print(msg);
+  }
+  %>
+<p class="page">
+<a href="index.jsp">トップページへ</a><br />
+<a href="employee.jsp">社員一覧ページへ</a>
+</p>
   <h2>部署一覧:</h2>
+    <%
+    if (depList.size() == 0) {
+    %>
+    <p>現在登録されている部署はありません。</p>
+    <%
+    } else {
+    %>
   <table border="1">
     <tr>
       <th>ID</th>
@@ -54,17 +64,21 @@ if (msg != null) {
         </form>
       </td>
       <td>
-      <form method="post" action="DepartmentServlet" >
-        <input type="hidden" name="departmentId" value="<%=depBean.getDepartmentId() %>" />
-        <input type="hidden" name="action" value="depDelete" />
-        <input type="submit" value="削除" />
-      </form>
+        <form method="post" action="DepartmentServlet">
+          <input type="hidden" name="departmentId"
+            value="<%=depBean.getDepartmentId()%>" /> <input type="hidden"
+            name="action" value="depDelete" /> <input type="submit"
+            value="削除" />
+        </form>
       </td>
     </tr>
     <%
     }
     %>
   </table>
+  <%
+    }
+    %>
   <p>
     <a href="departmentAddEdit.jsp?action=depAdd"><button
         type="button">新規作成</button></a>

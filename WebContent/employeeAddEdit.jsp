@@ -206,5 +206,11 @@ List<String> errMsgList = (List<String>)request.getAttribute("errMsgList");
     <!-- CheckServletへ行く -->
   </form>
 
+  <!-- キャンセルボタンを押したときに HTTPメソッド GET クエリー文字列で送られます employee.jsp?action=cancel  aリンクと同じようになる -->
+  <form action="employee.jsp" method="GET">
+    <input type="hidden" name="action" value="cancel" />
+    <input type="submit" value="キャンセル" />
+  </form>
+
 </body>
 </html>

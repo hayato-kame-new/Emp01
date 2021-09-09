@@ -53,9 +53,9 @@ public class CSVServlet extends HttpServlet {
 
         // Fileクラスのオブジェクトを作成  拡張子も書く
         String file_name = "/csv_result.csv";
-        File file = new File(System.getProperty("user.home") + "/Desktop" + "/csv_result.csv");
+        File file = new File(System.getProperty("user.home") + "/Desktop" + "/csv_result.csv"); // ユーザのデスクトップに、ファイルを作ろうとしてる
         try {
-            file.createNewFile(); // もしすでにファイルが存在してたら 何もしない falseが返るだけ
+            file.createNewFile(); // createNewFile()メソッドで、ファイルを作成する。もしすでにファイルが存在してたら 何もしない falseが返るだけ
         } catch (IOException e) {
             e.printStackTrace();
         }

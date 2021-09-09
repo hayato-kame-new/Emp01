@@ -20,5 +20,11 @@ String value = request.getParameter("department") != null ? request.getParameter
   <input type="hidden" name="departmentId" value="<%=request.getParameter("departmentId") %>" />
   <input type="submit" value="送信" />
 </form>
+<p>
+<form action="DepartmentServlet" method="post" >
+  <input type="hidden" name="action" value="cancel" />
+  <input type="submit" value="キャンセル" />
+</form>
+</p>
 </body>
 </html>

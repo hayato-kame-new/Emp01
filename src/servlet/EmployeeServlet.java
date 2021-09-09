@@ -32,21 +32,22 @@ public class EmployeeServlet extends HttpServlet {
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         // リクエスト情報の文字化け防止
         request.setCharacterEncoding("UTF-8");
         // 新規登録は、employeeAddEdit.jsp の aリンクのクエリーパラメータから、送られてくる
         // Checkサーブレットで、入力チェックの際に、エラーメッセージのリストに要素が入ってると、またこの EmployeeServlet()にフォワードしてくる
         // そして、また入力をしてもらう actionは、
-        String action = request.getParameter("action");
-         // actionの値が "add"の時は、新しいインスタンス(各フィールドは、各データ型の規定値)を生成してそれを リクエストスコープに保存して employeeAddEdit.jspへフォワードする
+        String action = request.getParameter("action"); // "cancel"の時には、 クエリーパラメータで送られてくる
+        // actionの値が "add"の時は、新しいインスタンス(各フィールドは、各データ型の規定値)を生成してそれを リクエストスコープに保存して employeeAddEdit.jspへフォワードする
         // actionの値が "edit" "delete" の時は、クエリーパラメータで送られ来た(formからGETアクセスだから)employeeIdを取得する
         EmployeeDAO empDAO = new EmployeeDAO();
         EmployeeBean empBean = null;
         // 編集時 クエリーパラメータで送られ来たキーemployeeIdの 値を取得して、それを元に、データベースから該当するEmployeeBeanオブジェクトを取得してくる
-        String employeeId = request.getParameter("employeeId");  // 引数が、クエリパラメータのキーです
+        String employeeId = request.getParameter("employeeId"); // 引数が、クエリパラメータのキーです
 
-        switch(action) {
+        switch (action) {
         case "add":
             // 新規登録する時は、新しいインスタンスを生成 各フィールドは、それぞれのデータ型の規定値となってる
             empBean = new EmployeeBean();
@@ -68,7 +69,8 @@ public class EmployeeServlet extends HttpServlet {
     /**
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         // TODO Auto-generated method stub
         doGet(request, response);
     }

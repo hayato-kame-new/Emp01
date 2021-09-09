@@ -49,7 +49,7 @@ public class DepartmentServlet extends HttpServlet {
         // デフォルトのフォワード先、結果ページへのパス
         String path = "/WEB-INF/jsp/result.jsp";
         // 結果ページへメッセージを出す
-        String msg = "データの新規登録に成功しました。";
+        String msg = "";
         String title = "成功";
 
         DepartmentDAO depDAO = new DepartmentDAO();
@@ -68,7 +68,7 @@ public class DepartmentServlet extends HttpServlet {
                 msg = "データの新規登録に失敗しました";
                 title = "失敗";
             }
-            // ここに来たら、成功してる
+            msg = "部署を新規登録しました。";
             break;
         case "depEdit":
             // 編集時は departmentId が hiddenフィールド で送られて来てる 実引数に渡して、データ更新をする
@@ -79,7 +79,7 @@ public class DepartmentServlet extends HttpServlet {
                 msg = "データの更新に失敗しました";
                 title = "失敗";
             }
-            msg = "データを更新しました";
+            msg = "部署名を更新しました";
             break;
         case "depDelete":
             // departmentId が hiddenフィールド で送られて来てる
@@ -91,6 +91,11 @@ public class DepartmentServlet extends HttpServlet {
             path = "department.jsp";
             msg = "データを削除しました。";
             break;
+        case "cancel":
+            // 部署一覧に行く
+            path = "department.jsp";
+            msg = "キャンセルしました。";
+            break;
         }
 
          // リクエストスコープに保存する リクエストスコープは、フォワードはできる（リダイレクトはできない）
@@ -100,9 +105,6 @@ public class DepartmentServlet extends HttpServlet {
         // フォワード
         RequestDispatcher dispatcher = request.getRequestDispatcher(path);
         dispatcher.forward(request, response);
-
-
-
 
     }
 
